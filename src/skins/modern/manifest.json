@@ -1,0 +1,10 @@
+{
+  "$schema": "../manifest.schema.json",
+  "id": "modern",
+  "name": "Modern",
+  "version": "1.0.0",
+  "description": "The existing SUBSTRATE frame appearance.",
+  "css": "skin.css",
+  "supportedFrameTypes": ["*"],
+  "capabilities": { "titleBar": true, "windowControls": true, "toolbarStyling": true, "decorativeEffects": false }
+}

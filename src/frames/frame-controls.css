@@ -1,0 +1,4 @@
+.frame-skin-picker { display: inline-flex; align-items: center; }
+.frame-skin-select { width: 30px; min-width: 30px; min-height: 28px; padding: 0 2px; color: var(--frame-header-text); background: var(--frame-control-background); border-color: var(--frame-control-border); cursor: pointer; }
+.frame-skin-picker:focus-within .frame-skin-select { width: auto; max-width: 150px; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

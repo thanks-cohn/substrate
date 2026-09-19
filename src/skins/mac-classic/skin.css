@@ -1,0 +1,4 @@
+.block[data-frame-skin="mac-classic"] { --frame-background: #dedbd1; --frame-border-color: #222; --frame-border-width: 2px; --frame-border-radius: 2px; --frame-header-background: repeating-linear-gradient(#fff 0 2px, #222 2px 3px); --frame-header-text: #111; --frame-control-background: #fff; --frame-control-border: #111; --frame-toolbar-background: #dedbd1; --frame-toolbar-text: #111; --frame-shadow: 3px 3px 0 #222; --frame-font-family: Geneva, Chicago, ui-sans-serif, sans-serif; }
+.block[data-frame-skin="mac-classic"] > .block-header > * { background-color: #dedbd1; }
+.block[data-frame-skin="mac-classic"] > .block-header .block-name { font-weight: 700; text-align: center; }
+.block[data-frame-skin="mac-classic"] > .block-header button { border-radius: 1px; }

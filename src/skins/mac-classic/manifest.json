@@ -1,0 +1,10 @@
+{
+  "$schema": "../manifest.schema.json",
+  "id": "mac-classic",
+  "name": "Classic Macintosh",
+  "version": "1.0.0",
+  "description": "A compact monochrome, classic Macintosh-inspired frame.",
+  "css": "skin.css",
+  "supportedFrameTypes": ["*"],
+  "capabilities": { "titleBar": true, "windowControls": true, "toolbarStyling": true, "decorativeEffects": true }
+}
