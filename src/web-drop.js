@@ -89,6 +89,8 @@ function writeMarker(block, payload, notify = false) {
   if (!store) return;
   store.value = `${MARKER}${JSON.stringify(payload)}`;
   block.dataset.customKind = payload.kind;
+  block.dataset.frameCategory = payload.kind === "remote-video" ? "video" : payload.kind === "web" ? "web" : payload.kind;
+  if (options.skinOverride) block.dataset.frameSkinOverride = options.skinOverride;
   if (notify) {
     workspace.dispatchEvent(new CustomEvent("flashframe:workspace-changed", { bubbles: true }));
   }
@@ -455,7 +457,8 @@ function convertRestoredMarker(block) {
     id: block.dataset.blockId,
     name,
     style,
-    replace: block
+    replace: block,
+    skinOverride: block.dataset.frameSkinOverride || null
   });
   return true;
 }

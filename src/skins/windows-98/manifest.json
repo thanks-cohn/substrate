@@ -2,9 +2,9 @@
   "$schema": "../manifest.schema.json",
   "id": "windows-98",
   "name": "Windows 98",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Windows 98-inspired beveled frame.",
   "css": "skin.css",
   "supportedFrameTypes": ["*"],
-  "capabilities": { "titleBar": true, "windowControls": true, "toolbarStyling": true, "decorativeEffects": true }
+  "capabilities": { "titleBar": true, "windowControls": true, "toolbarStyling": true, "decorativeEffects": true, "decorative": { "effects": [], "respectsReducedMotion": true, "userToggleable": true, "performanceTier": "low" } }
 }

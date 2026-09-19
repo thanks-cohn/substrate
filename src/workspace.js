@@ -38,7 +38,7 @@ import { createObjectDragSession } from "./object-drag-space.js";
 import { isViewportFixed } from "./viewport-fix.js";
 import { fitOpenedBlock } from "./initial-open-fit.js";
 import { capturePdfPageDomObservations, capturePdfPageGeometry, capturePointerHitTest, capturePdfVisualScene as buildPdfVisualScene, compareGeometryFingerprints, createBoundedGeometryJournal, createPdfEditId, ensurePdfEditIdentity, getPdfDiagnosticMode, resolvePdfInteractiveTextRect, resolvePdfVisualTarget, setPdfDiagnosticMode as updatePdfDiagnosticMode } from "./documents/pdf-observability.js";
-import { attachFramePresentation, framePresentationApi, normalizeSkinId } from "./frames/frame-skin-manager.js";
+import { attachFramePresentation, frameOverride, framePresentationApi } from "./frames/frame-skin-manager.js";
 
 const workspace = document.querySelector("#workspace");
 const toolbar = document.querySelector(".toolbar");
@@ -2107,7 +2107,10 @@ async function createBlock(record = {}, { fitOnOpen = true } = {}) {
   const block = definition.createElement();
   block.dataset.blockId = record.id ?? crypto.randomUUID();
   block.dataset.blockType = type;
-  attachFramePresentation(block, record.skinId);
+  // `skinOverride` is inheritance-aware. The earlier prototype persisted
+  // `skinId`; accepting it as an override preserves those saved snapshots.
+  const restoredSkinOverride = Object.hasOwn(record, "skinOverride") ? record.skinOverride : record.skinId;
+  attachFramePresentation(block, restoredSkinOverride);
   if (record.timedMotion) block.dataset.timedMotion = JSON.stringify(record.timedMotion);
   if (record.layerRule) block.dataset.layerRuleData = JSON.stringify(record.layerRule);
   setSourceRecord(block, record.source ?? null);
@@ -2145,7 +2148,8 @@ function captureBlock(block) {
   const record = {
     id: block.dataset.blockId,
     type,
-    skinId: normalizeSkinId(block.dataset.frameSkin, type),
+    skinOverride: frameOverride(block),
+    skinId: block.dataset.frameSkin || "modern",
     name: block.querySelector(".block-name")?.value?.trim() || "Untitled",
     geometry: readGeometry(block),
     source: getSourceRecord(block),

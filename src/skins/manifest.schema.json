@@ -16,7 +16,7 @@
     "capabilities": {
       "type": "object", "additionalProperties": false,
       "required": ["titleBar", "windowControls", "toolbarStyling", "decorativeEffects"],
-      "properties": { "titleBar": { "type": "boolean" }, "windowControls": { "type": "boolean" }, "toolbarStyling": { "type": "boolean" }, "decorativeEffects": { "type": "boolean" } }
+      "properties": { "titleBar": { "type": "boolean" }, "windowControls": { "type": "boolean" }, "toolbarStyling": { "type": "boolean" }, "decorativeEffects": { "type": "boolean" }, "decorative": { "type": "object", "additionalProperties": false, "required": ["effects", "respectsReducedMotion", "userToggleable", "performanceTier"], "properties": { "effects": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }, "respectsReducedMotion": { "type": "boolean" }, "userToggleable": { "type": "boolean" }, "performanceTier": { "enum": ["low", "medium", "high"] } } } }
     }
   }
 }

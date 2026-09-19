@@ -16,9 +16,17 @@ This incremental split avoids moving fragile PDF/DOCX rules merely for organizat
 
 ## State and precedence
 
-Every created frame receives `data-frame-skin` and every captured block record receives optional `skinId`. Old records and invalid/incompatible identifiers normalize to `modern`. Duplication uses the same record and therefore carries the skin. Snapshots, autosave/portable consumers using the shared capture bridge, and restoration all use this field; native PDF/DOCX/image/media bytes never do.
+Appearance has three persisted preference levels, resolved in this exact order: individual override (`skinOverride`) → category default → overall default → Modern safety fallback. The settings record is `substrate.frame-appearance.v1`, shaped as `{version: 1, overall, categories}`. Category entries are optional; removing one makes it inherit the overall value. The frame selector's **Use default** choice removes its override, so later default changes immediately update that frame without recreating its application runtime.
+
+Every frame exposes the resolved value as `data-frame-skin`, its source as `data-frame-skin-reason`, and an optional explicit preference as `data-frame-skin-override`. Capture records store both inheritance-aware `skinOverride` and compatibility `skinId`. Records with neither field inherit. Records produced by the first skin prototype only have `skinId`; restoration treats that value as an override so imported/saved appearance is not lost. Duplication carries the same preference while receiving an independent frame ID. Native PDF/DOCX/image/media bytes never contain appearance state.
 
 The workspace/global theme supplies workspace colors and the default modern variables. An explicit per-frame skin supplies frame variables after that. Global theme updates do not rewrite `data-frame-skin`. Application document formatting has the final semantic boundary and is never inherited from a skin selector.
+
+## Categories and deterministic layout
+
+Classification uses canonical metadata, never titles or CSS selectors. Registered `pdf`, `docx`, `gallery`, `video`, `text`, `csv`, `zip`, and `cbz` types map to stable categories. Rich custom frames stamp `data-frame-category` for image, canvas, web, generic file, audio, video, and gallery categories. Unknown types use `generic`. Audio and video remain separate preferences even where they share playback infrastructure.
+
+`frame-layout.js` defines measured contracts instead of accumulating arbitrary media queries. Width and height are independent: each frame is `narrow|wide` and `short|tall`, producing states such as `narrow-tall`. Contracts publish minimum functional width/height, compact and short thresholds, title-bar height, control size, and control gap. The manager reflects these as data attributes and CSS variables. Header actions never shrink, the title retains a reachable minimum, and generic narrow toolbars scroll horizontally. PDF and DOCX keep their specialized toolbar/layout behavior and document coordinate systems. Borders remain in `border-box`, so decorative corners and outer dimensions remain deterministic during resize.
 
 ## Manifest contract
 
@@ -42,11 +50,13 @@ Supported variables are:
 
 The read-only global `SubstrateFrames` exposes:
 
-* `listFrameTypes()`, `listSkins()`, and `inspectSkin(id)` for discovery.
-* `inspect(frameId)` for application type, stable identity, selected skin, presentation modes, and frame operations.
-* `getAppearance(frameId)` for the presentation-only subset.
+* `getDefaults()`, `listCategories()`, `listFrameTypes()`, `listSkins()`, and `inspectSkin(id)` for preference and registry discovery.
+* `inspect(frameId)` for application type/category, stable identity, explicit-override status, override and resolved skins, resolution reason, presentation modes, responsive state, constraints, and frame operations.
+* `getAppearance(frameId)` for the same non-document presentation subset.
 
 It exposes no document content, handles, history, or mutation method. A real skin transition emits `substrate:frame-skin-changed` with type `FRAME_SKIN_CHANGED`, old/new IDs, and explicit false flags for model and identity changes. It does not emit per-property noise.
+
+Skin manifests may declare decorative effect names plus reduced-motion compliance, user-toggle support, and a low/medium/high performance tier. The current demonstrations declare no runtime effects. A future effect host must honor those declarations and user controls; skins must never implement effects by reaching into document engines.
 
 ## Adding a skin (agent-safe recipe)
 

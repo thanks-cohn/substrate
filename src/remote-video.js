@@ -192,6 +192,7 @@ function createRemoteVideoBlock(payload, options = {}) {
   block.dataset.blockType = "text";
   block.dataset.blockId = options.id || crypto.randomUUID();
   block.dataset.customKind = "remote-video";
+  block.dataset.frameCategory = "video";
   block.dataset.timedMedia = "true";
   block.dataset.syncGroup = payload.syncGroup;
 
