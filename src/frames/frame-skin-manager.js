@@ -140,7 +140,7 @@ export function attachFramePresentation(frame, requestedOverride) {
     const trigger = document.createElement("button");
     trigger.type = "button";
     trigger.className = "frame-skin-trigger";
-    trigger.textContent = "▣ ▾";
+    trigger.textContent = "Appearance ▾";
     trigger.setAttribute("aria-haspopup", "menu");
     trigger.setAttribute("aria-expanded", "false");
     trigger.addEventListener("click", event => { event.stopPropagation(); openFramePicker(frame, trigger); });
