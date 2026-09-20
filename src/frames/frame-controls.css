@@ -1,19 +1,28 @@
-/* Stable, compact trigger: expanding a native select inside the draggable,
+/* Readable trigger: expanding a native select inside the draggable,
    overflow-clipped frame used to collapse its title and hide the menu. */
-.frame-skin-picker { display: inline-flex; flex: 0 0 46px; align-items: center; }
+.frame-skin-picker { display: inline-flex; flex: 0 0 auto; align-items: center; min-width: 0; }
 .block-actions .frame-skin-trigger {
   box-sizing: border-box;
-  width: 46px;
-  min-width: 46px;
-  min-height: 30px;
-  padding: 0 3px;
+  width: 105px;
+  min-width: 105px;
+  min-height: 34px;
+  padding: 0 8px;
   white-space: nowrap;
   color: var(--frame-header-text);
   background: var(--frame-control-background);
   border-color: var(--frame-control-border);
-  font-size: 13px;
-  line-height: 1;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
   cursor: pointer;
+}
+/* A compact but still labeled control for narrow windows. Its popover retains
+   the full-sized controls and does not enlarge or reflow the frame itself. */
+.block[data-frame-width-state="narrow"] .block-actions .frame-skin-trigger {
+  width: 76px;
+  min-width: 76px;
+  padding-inline: 4px;
+  font-size: 11px;
 }
 .frame-skin-trigger[aria-expanded="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
 /* Render the actual choices at body level: never clipped by .block or by
@@ -24,7 +33,7 @@
   z-index: 2147483000;
   display: grid;
   gap: 3px;
-  width: min(232px, calc(100vw - 16px));
+  width: min(280px, calc(100vw - 16px));
   max-height: min(350px, calc(100vh - 16px));
   overflow: auto;
   padding: 7px;
@@ -37,8 +46,8 @@
 .frame-skin-popover .frame-skin-option {
   box-sizing: border-box;
   width: 100%;
-  min-height: 34px;
-  padding: 6px 10px;
+  min-height: 42px;
+  padding: 9px 12px;
   text-align: left;
   border: 0;
   border-radius: 5px;
