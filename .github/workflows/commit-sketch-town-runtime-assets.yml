@@ -1,0 +1,64 @@
+name: Commit Sketch Town runtime PNGs
+
+# One-time asset materialization for the existing recovery branch.
+# These PNGs are a small exact subset of the Kenney ZIP already tracked in Git.
+on:
+  push:
+    branches:
+      - codex/omni-world-pr2-town-recovery
+    paths:
+      - .github/workflows/commit-sketch-town-runtime-assets.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  commit-runtime-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Verify the original archive and extract the five browser assets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          archive = Path("assets/worlds/sketch-town/kenney_sketchTown.zip")
+          data = archive.read_bytes()
+          sha = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+          expected = "00c8b0f06c15532f00dc53ec956a428c0d54c8a3"
+          if sha != expected:
+              raise SystemExit(f"Source ZIP changed: {sha}, expected {expected}")
+          PY
+          python3 scripts/prepare-sketch-town-assets.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import struct
+          names = ["grass.png", "path.png", "building.png", "tree.png", "trees.png"]
+          root = Path("src/assets/worlds/sketch-town")
+          for name in names:
+              data = (root / name).read_bytes()
+              if data[:8] != b"\x89PNG\r\n\x1a\n" or len(data) < 24:
+                  raise SystemExit(f"Missing or invalid PNG: {name}")
+              width, height = struct.unpack(">II", data[16:24])
+              if not width or not height:
+                  raise SystemExit(f"Invalid image size: {name}")
+              print(f"{name}: {width}x{height} ({len(data)} bytes)")
+          PY
+      - name: Commit the exact five PNGs to the recovery branch
+        run: |
+          git add -f -- src/assets/worlds/sketch-town/grass.png \
+            src/assets/worlds/sketch-town/path.png \
+            src/assets/worlds/sketch-town/building.png \
+            src/assets/worlds/sketch-town/tree.png \
+            src/assets/worlds/sketch-town/trees.png
+          if git diff --cached --quiet; then
+            echo "All five files are already tracked and up to date."
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -m "assets: include Sketch Town runtime PNGs in source checkout"
+          git push origin HEAD:refs/heads/codex/omni-world-pr2-town-recovery
