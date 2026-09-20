@@ -223,6 +223,8 @@ function buildShell(payload, options = {}) {
   block.dataset.blockType = "text";
   block.dataset.blockId = options.id ?? crypto.randomUUID();
   block.dataset.customLocalKind = payload.kind;
+  block.dataset.frameCategory = payload.kind === "file" ? "generic" : payload.kind;
+  if (options.skinOverride) block.dataset.frameSkinOverride = options.skinOverride;
 
   const placement = options.placement ?? placementFor(payload.kind, options.point, options.offset ?? 0);
   block.style.left = options.style?.left ?? `${placement.x}px`;
@@ -782,7 +784,8 @@ function convertRestoredMarker(block) {
     id: block.dataset.blockId,
     name: block.querySelector(".block-name")?.value || payload.name,
     style,
-    replace: block
+    replace: block,
+    skinOverride: block.dataset.frameSkinOverride || null
   });
   return true;
 }

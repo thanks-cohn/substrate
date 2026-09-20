@@ -192,6 +192,8 @@ function createRemoteVideoBlock(payload, options = {}) {
   block.dataset.blockType = "text";
   block.dataset.blockId = options.id || crypto.randomUUID();
   block.dataset.customKind = "remote-video";
+  block.dataset.frameCategory = "video";
+  if (options.skinOverride) block.dataset.frameSkinOverride = options.skinOverride;
   block.dataset.timedMedia = "true";
   block.dataset.syncGroup = payload.syncGroup;
 
@@ -344,7 +346,8 @@ function promoteWebBlock(block) {
       height: block.style.height,
       zIndex: block.style.zIndex
     },
-    replace: block
+    replace: block,
+    skinOverride: block.dataset.frameSkinOverride || null
   });
   setStatus("URL block is now a native video block. Global play, rewind, and forward include it.");
   workspace.dispatchEvent(new CustomEvent("flashframe:workspace-changed", { bubbles: true }));
@@ -391,7 +394,8 @@ function convertRestoredRemoteVideo(block) {
       height: block.style.height,
       zIndex: block.style.zIndex
     },
-    replace: block
+    replace: block,
+    skinOverride: block.dataset.frameSkinOverride || null
   });
   return true;
 }

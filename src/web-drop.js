@@ -89,6 +89,7 @@ function writeMarker(block, payload, notify = false) {
   if (!store) return;
   store.value = `${MARKER}${JSON.stringify(payload)}`;
   block.dataset.customKind = payload.kind;
+  block.dataset.frameCategory = payload.kind === "remote-video" ? "video" : payload.kind === "web" ? "web" : payload.kind;
   if (notify) {
     workspace.dispatchEvent(new CustomEvent("flashframe:workspace-changed", { bubbles: true }));
   }
@@ -201,6 +202,8 @@ function buildShell(payload, options = {}) {
   block.dataset.blockType = "text";
   block.dataset.blockId = options.id ?? crypto.randomUUID();
   block.dataset.customKind = payload.kind;
+  block.dataset.frameCategory = payload.kind === "web" ? "web" : payload.kind;
+  if (options.skinOverride) block.dataset.frameSkinOverride = options.skinOverride;
 
   const placement = options.placement ?? defaultPlacement(payload.kind, options.point);
   block.style.left = options.style?.left ?? `${placement.x}px`;
@@ -455,7 +458,8 @@ function convertRestoredMarker(block) {
     id: block.dataset.blockId,
     name,
     style,
-    replace: block
+    replace: block,
+    skinOverride: block.dataset.frameSkinOverride || null
   });
   return true;
 }
