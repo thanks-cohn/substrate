@@ -1,4 +1,4 @@
-import { cloneDefaults, createProjection, frameToWorldGeometry, localToWorld, normalizeLighting, projectPoint, projectShadow } from "./omni-world-model.mjs";
+import { cloneDefaults, createProjection, frameToWorldGeometry, localToWorld, normalizeLighting, projectPoint, projectShadow, SKETCH_TOWN_ASSET_PATHS } from "./omni-world-model.mjs";
 
 const STORAGE_KEY = "substrate.omni-world.v1";
 const workspace = document.querySelector("#workspace");
@@ -24,9 +24,7 @@ const scene = {
     { id: "tree-east", kind: "scenery", asset: "tree", local: { x: 11, y: 7, z: 0 } },
     { id: "tree-south", kind: "scenery", asset: "trees", local: { x: 6, y: 9, z: 0 } }
   ],
-  assetReferences: {
-    grass: "../assets/worlds/sketch-town/grass.png", path: "../assets/worlds/sketch-town/path.png", building: "../assets/worlds/sketch-town/building.png", tree: "../assets/worlds/sketch-town/tree.png", trees: "../assets/worlds/sketch-town/trees.png"
-  }
+  assetReferences: Object.fromEntries(Object.entries(SKETCH_TOWN_ASSET_PATHS).map(([name, path]) => [name, new URL(path, import.meta.url).href]))
 };
 
 function loadState() {

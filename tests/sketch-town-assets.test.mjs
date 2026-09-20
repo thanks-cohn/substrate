@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
 import test from "node:test";
+import { SKETCH_TOWN_ASSET_PATHS } from "../src/worlds/omni-world-model.mjs";
 
 const root = new URL("..", import.meta.url).pathname;
 const script = join(root, "scripts/prepare-sketch-town-assets.py");
@@ -11,6 +12,11 @@ const archive = join(root, "assets/worlds/sketch-town/kenney_sketchTown.zip");
 const names = ["grass.png", "path.png", "building.png", "tree.png", "trees.png"];
 
 function run(...arguments_) { return spawnSync("python3", [script, ...arguments_], { encoding: "utf8" }); }
+
+test("runtime asset paths resolve from the world module into src/assets", () => {
+  const moduleUrl = new URL("../src/worlds/omni-world.js", import.meta.url);
+  assert.deepEqual(Object.values(SKETCH_TOWN_ASSET_PATHS).map(path => new URL(path, moduleUrl).pathname), names.map(name => join(root, "src/assets/worlds/sketch-town", name)));
+});
 
 test("preparation extracts every browser-loadable PNG to the renderer paths", async () => {
   const output = await mkdtemp(join(tmpdir(), "sketch-town-assets-"));

@@ -6,6 +6,14 @@ export const DEFAULT_WORLD_STATE = Object.freeze({
   blocks: Object.freeze([{ id: "kenney-sketch-town", name: "Sketch Town", anchored: false, transform: { x: 760, y: 520, z: 0, scale: 1 }, footprint: { width: 960, height: 720 } }])
 });
 
+export const SKETCH_TOWN_ASSET_PATHS = Object.freeze({
+  grass: "../assets/worlds/sketch-town/grass.png",
+  path: "../assets/worlds/sketch-town/path.png",
+  building: "../assets/worlds/sketch-town/building.png",
+  tree: "../assets/worlds/sketch-town/tree.png",
+  trees: "../assets/worlds/sketch-town/trees.png"
+});
+
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const clamp = (value, low, high) => Math.min(high, Math.max(low, finite(value, low)));
 export const cloneDefaults = () => JSON.parse(JSON.stringify(DEFAULT_WORLD_STATE));
