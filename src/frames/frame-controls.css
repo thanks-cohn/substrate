@@ -1,6 +1,67 @@
-.frame-skin-picker { display: inline-flex; flex: 0 0 auto; align-items: center; }
-.frame-skin-select { width: 30px; min-width: 30px; min-height: 28px; padding: 0 2px; color: var(--frame-header-text); background: var(--frame-control-background); border-color: var(--frame-control-border); cursor: pointer; }
-.frame-skin-picker:focus-within .frame-skin-select { width: auto; max-width: 150px; }
+/* Readable trigger: expanding a native select inside the draggable,
+   overflow-clipped frame used to collapse its title and hide the menu. */
+.frame-skin-picker { display: inline-flex; flex: 0 0 auto; align-items: center; min-width: 0; }
+.block-actions .frame-skin-trigger {
+  box-sizing: border-box;
+  width: 105px;
+  min-width: 105px;
+  min-height: 34px;
+  padding: 0 8px;
+  white-space: nowrap;
+  color: var(--frame-header-text);
+  background: var(--frame-control-background);
+  border-color: var(--frame-control-border);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.2;
+  cursor: pointer;
+}
+/* A compact but still labeled control for narrow windows. Its popover retains
+   the full-sized controls and does not enlarge or reflow the frame itself. */
+.block[data-frame-width-state="narrow"] .block-actions .frame-skin-trigger {
+  width: 76px;
+  min-width: 76px;
+  padding-inline: 4px;
+  font-size: 11px;
+}
+.frame-skin-trigger[aria-expanded="true"] { outline: 2px solid Highlight; outline-offset: -2px; }
+/* Render the actual choices at body level: never clipped by .block or by
+   a narrow frame header, including when the frame is maximized. */
+.frame-skin-popover {
+  box-sizing: border-box;
+  position: fixed;
+  z-index: 2147483000;
+  display: grid;
+  gap: 3px;
+  width: min(280px, calc(100vw - 16px));
+  max-height: min(350px, calc(100vh - 16px));
+  overflow: auto;
+  padding: 7px;
+  border: 1px solid color-mix(in srgb, CanvasText 24%, transparent);
+  border-radius: 9px;
+  background: Canvas;
+  color: CanvasText;
+  box-shadow: 0 12px 28px rgba(0,0,0,.25);
+}
+.frame-skin-popover .frame-skin-option {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  text-align: left;
+  border: 0;
+  border-radius: 5px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.frame-skin-popover .frame-skin-option:hover,
+.frame-skin-popover .frame-skin-option:focus-visible {
+  outline: 2px solid Highlight;
+  outline-offset: -2px;
+  background: color-mix(in srgb, Highlight 12%, Canvas);
+}
+.frame-skin-popover .frame-skin-option[aria-checked="true"]::before { content: "✓ "; font-weight: 700; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .frame-default-row { display: grid; grid-template-columns: minmax(90px, 1fr) minmax(130px, 1fr); gap: 8px; align-items: center; font-size: 12px; }
 .frame-default-row select { min-width: 0; width: 100%; }
