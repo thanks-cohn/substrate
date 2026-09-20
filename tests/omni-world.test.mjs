@@ -1,12 +1,21 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { cloneDefaults, createProjection, frameToWorldGeometry, importTiledMap, localToWorld, normalizeLighting, projectPoint, projectShadow, unprojectGround, worldToLocal } from "../src/worlds/omni-world-model.mjs";
+import { cloneDefaults, createProjection, frameToWorldGeometry, importTiledMap, importWorldScene, localToWorld, normalizeLighting, projectPoint, projectShadow, unprojectGround, worldToLocal } from "../src/worlds/omni-world-model.mjs";
 
 test("loads the editable Tiled scene and preserves layers, IDs, and tileset source", async () => {
   const map = JSON.parse(await readFile(new URL("../src/assets/worlds/sketch-town/scene.json", import.meta.url)));
   const block = importTiledMap(map, { id: "kenney" });
   assert.equal(block.source.orientation, "isometric"); assert.equal(block.source.tilesets[0].source, "source/Map/map_tiles.tsx"); assert.deepEqual(block.layers.map(layer => layer.type), ["tilelayer", "objectgroup"]); assert.equal(block.layers[1].objects[0].id, 1);
+});
+
+test("supported Tiled data becomes engine-neutral town tiles and scenery", async () => {
+  const map = JSON.parse(await readFile(new URL("../src/assets/worlds/sketch-town/scene.json", import.meta.url)));
+  const scene = importWorldScene(map, { tileAssets: { 1: "grass", 2: "path" } });
+  assert.equal(scene.tiles.length, 165);
+  assert.equal(scene.tiles.filter(tile => tile.asset === "path").length, 25);
+  assert.deepEqual(scene.objects.map(object => object.asset), ["building", "tree", "tree", "trees"]);
+  assert.deepEqual(scene.objects[0].source, { layerId: "2", objectId: 1 });
 });
 
 test("isometric projection round trips ground coordinates and respects elevation", () => {

@@ -1,4 +1,4 @@
-import { cloneDefaults, createProjection, frameToWorldGeometry, localToWorld, normalizeLighting, projectPoint, projectShadow } from "./omni-world-model.mjs";
+import { cloneDefaults, createProjection, frameToWorldGeometry, importWorldScene, localToWorld, normalizeLighting, projectPoint, projectShadow, SKETCH_TOWN_ASSET_PATHS } from "./omni-world-model.mjs";
 
 const STORAGE_KEY = "substrate.omni-world.v1";
 const workspace = document.querySelector("#workspace");
@@ -15,7 +15,7 @@ const images = new Map();
 let state = loadState();
 let scheduled = false;
 
-const scene = {
+let scene = {
   id: "sketch-town-scene-v1",
   tileLayers: [{ id: "ground", name: "Ground", width: 15, height: 11, tileSize: 1 }],
   objects: [
@@ -24,10 +24,16 @@ const scene = {
     { id: "tree-east", kind: "scenery", asset: "tree", local: { x: 11, y: 7, z: 0 } },
     { id: "tree-south", kind: "scenery", asset: "trees", local: { x: 6, y: 9, z: 0 } }
   ],
-  assetReferences: {
-    grass: "../assets/worlds/sketch-town/grass.png", path: "../assets/worlds/sketch-town/path.png", building: "../assets/worlds/sketch-town/building.png", tree: "../assets/worlds/sketch-town/tree.png", trees: "../assets/worlds/sketch-town/trees.png"
-  }
+  assetReferences: Object.fromEntries(Object.entries(SKETCH_TOWN_ASSET_PATHS).map(([name, path]) => [name, new URL(path, import.meta.url).href]))
 };
+
+fetch(new URL("../assets/worlds/sketch-town/scene.json", import.meta.url)).then(response => {
+  if (!response.ok) throw new Error(`Sketch Town scene returned ${response.status}`);
+  return response.json();
+}).then(map => {
+  scene = { ...importWorldScene(map, { tileAssets: { 1: "grass", 2: "path" }, objectAssets: { building: "building", tree: "tree", trees: "trees" } }), assetReferences: scene.assetReferences };
+  requestRender();
+}).catch(error => console.warn("Could not load the Sketch Town scene; using the built-in layout.", error));
 
 function loadState() {
   try {
@@ -52,11 +58,10 @@ function resizeCanvas() {
 function polygon(points, fill, stroke = null) { if (!points.length) return; context.beginPath(); context.moveTo(points[0].x, points[0].y); points.slice(1).forEach(point => context.lineTo(point.x, point.y)); context.closePath(); context.fillStyle = fill; context.fill(); if (stroke) { context.strokeStyle = stroke; context.stroke(); } }
 
 function drawBlock(block) {
-  const w = 15, h = 11;
-  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
-    const points = [{ x, y, z: 0 }, { x: x + 1, y, z: 0 }, { x: x + 1, y: y + 1, z: 0 }, { x, y: y + 1, z: 0 }].map(point => projectLocal(block, point));
-    const path = y === 5 || x === 7;
-    polygon(points, path ? "#d7bd83" : ((x + y) % 2 ? "#84bd68" : "#8fc873"), "rgba(45,83,49,.16)");
+  const tiles = scene.tiles || Array.from({ length: 165 }, (_, index) => ({ asset: Math.floor(index / 15) === 5 || index % 15 === 7 ? "path" : "grass", local: { x: index % 15, y: Math.floor(index / 15), z: 0 } }));
+  for (const tile of tiles) {
+    const points = [tile.local, { ...tile.local, x: tile.local.x + 1 }, { ...tile.local, x: tile.local.x + 1, y: tile.local.y + 1 }, { ...tile.local, y: tile.local.y + 1 }].map(point => projectLocal(block, point));
+    polygon(points, tile.asset === "path" ? "#d7bd83" : ((tile.local.x + tile.local.y) % 2 ? "#84bd68" : "#8fc873"), "rgba(45,83,49,.16)");
   }
   for (const object of scene.objects.slice().sort((a, b) => (a.local.x + a.local.y) - (b.local.x + b.local.y))) {
     const image = images.get(object.asset), point = projectLocal(block, object.local);

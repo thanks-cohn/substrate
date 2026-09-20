@@ -6,6 +6,14 @@ export const DEFAULT_WORLD_STATE = Object.freeze({
   blocks: Object.freeze([{ id: "kenney-sketch-town", name: "Sketch Town", anchored: false, transform: { x: 760, y: 520, z: 0, scale: 1 }, footprint: { width: 960, height: 720 } }])
 });
 
+export const SKETCH_TOWN_ASSET_PATHS = Object.freeze({
+  grass: "../assets/worlds/sketch-town/grass.png",
+  path: "../assets/worlds/sketch-town/path.png",
+  building: "../assets/worlds/sketch-town/building.png",
+  tree: "../assets/worlds/sketch-town/tree.png",
+  trees: "../assets/worlds/sketch-town/trees.png"
+});
+
 const finite = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const clamp = (value, low, high) => Math.min(high, Math.max(low, finite(value, low)));
 export const cloneDefaults = () => JSON.parse(JSON.stringify(DEFAULT_WORLD_STATE));
@@ -69,4 +77,21 @@ export function importTiledMap(map, { id = "imported-world", transform = { x: 0,
   if (!map || ![map.width, map.height, map.tilewidth, map.tileheight].every(value => Number.isFinite(Number(value)) && Number(value) > 0)) throw new TypeError("Invalid Tiled map dimensions");
   const layers = (map.layers || []).filter(layer => layer && (layer.type === "tilelayer" || layer.type === "objectgroup")).map(layer => ({ id: String(layer.id), name: String(layer.name || ""), type: layer.type, data: Array.isArray(layer.data) ? [...layer.data] : undefined, objects: Array.isArray(layer.objects) ? layer.objects.map(object => ({ ...object })) : undefined }));
   return { id, source: { format: "tiled-json", orientation: map.orientation || "orthogonal", tileWidth: Number(map.tilewidth), tileHeight: Number(map.tileheight), tilesets: (map.tilesets || []).map(set => ({ firstgid: set.firstgid, source: set.source })) }, transform: { ...transform }, footprint: { width: Number(map.width), height: Number(map.height) }, layers, objects: [] };
+}
+
+/** Convert the supported Tiled subset at the boundary into engine-neutral scene data. */
+export function importWorldScene(map, { tileAssets = {}, objectAssets = {} } = {}) {
+  const imported = importTiledMap(map);
+  const width = imported.footprint.width;
+  const tiles = imported.layers.filter(layer => layer.type === "tilelayer").flatMap(layer => (layer.data || []).flatMap((gid, index) => {
+    const asset = tileAssets[gid];
+    return asset ? [{ id: `${layer.id}:${index}`, asset, local: { x: index % width, y: Math.floor(index / width), z: 0 }, source: { layerId: layer.id, gid } }] : [];
+  }));
+  const objects = imported.layers.filter(layer => layer.type === "objectgroup").flatMap(layer => (layer.objects || []).flatMap(object => {
+    const properties = Object.fromEntries((object.properties || []).map(property => [property.name, property.value]));
+    const asset = properties.asset || objectAssets[object.type];
+    if (!asset) return [];
+    return [{ id: `tiled:${layer.id}:${object.id}`, name: object.name || "", kind: "scenery", asset, local: { x: finite(object.x), y: finite(object.y), z: finite(properties.elevation) }, source: { layerId: layer.id, objectId: object.id } }];
+  }));
+  return { id: "world-scene", footprint: imported.footprint, tiles, objects, source: imported.source };
 }
