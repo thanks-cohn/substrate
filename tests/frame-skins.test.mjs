@@ -94,3 +94,27 @@ test("skin CSS is frame-scoped and avoids document rendering selectors", async (
     assert.doesNotMatch(css, /!important/);
   }
 });
+
+test("frame appearance picker positions a full-size menu inside viewport without frame reflow", async () => {
+  const { positionFrameSkinMenu } = await import("../src/frames/frame-skin-manager.js");
+  const menuWidth = 280, menuHeight = 190;
+  const topLeft = positionFrameSkinMenu({ left: 2, top: 2, bottom: 36 }, menuWidth, menuHeight, 800, 600);
+  assert.deepEqual(topLeft, { left: 8, top: 41 });
+  const bottomRight = positionFrameSkinMenu({ left: 760, top: 570, bottom: 604 }, menuWidth, menuHeight, 800, 600);
+  assert.deepEqual(bottomRight, { left: 512, top: 375 });
+  assert.ok(bottomRight.left + menuWidth <= 800);
+  assert.ok(bottomRight.top + menuHeight <= 600);
+});
+
+test("frame appearance picker is a readable body-level popover rather than clipped native select", async () => {
+  const manager = await readFile(new URL("../src/frames/frame-skin-manager.js", import.meta.url), "utf8");
+  const css = await readFile(new URL("../src/frames/frame-controls.css", import.meta.url), "utf8");
+  assert.match(manager, /document\.body\.append\(menu\)/);
+  assert.match(manager, /trigger\.textContent = "Appearance ▾"/);
+  assert.match(manager, /aria-expanded/);
+  assert.match(manager, /closeFramePicker/);
+  assert.match(css, /\.frame-skin-popover\s*\{/);
+  assert.match(css, /position:\s*fixed/);
+  assert.match(css, /width:\s*min\(280px/);
+  assert.doesNotMatch(css, /\.frame-skin-select/);
+});
