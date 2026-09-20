@@ -78,3 +78,20 @@ export function importTiledMap(map, { id = "imported-world", transform = { x: 0,
   const layers = (map.layers || []).filter(layer => layer && (layer.type === "tilelayer" || layer.type === "objectgroup")).map(layer => ({ id: String(layer.id), name: String(layer.name || ""), type: layer.type, data: Array.isArray(layer.data) ? [...layer.data] : undefined, objects: Array.isArray(layer.objects) ? layer.objects.map(object => ({ ...object })) : undefined }));
   return { id, source: { format: "tiled-json", orientation: map.orientation || "orthogonal", tileWidth: Number(map.tilewidth), tileHeight: Number(map.tileheight), tilesets: (map.tilesets || []).map(set => ({ firstgid: set.firstgid, source: set.source })) }, transform: { ...transform }, footprint: { width: Number(map.width), height: Number(map.height) }, layers, objects: [] };
 }
+
+/** Convert the supported Tiled subset at the boundary into engine-neutral scene data. */
+export function importWorldScene(map, { tileAssets = {}, objectAssets = {} } = {}) {
+  const imported = importTiledMap(map);
+  const width = imported.footprint.width;
+  const tiles = imported.layers.filter(layer => layer.type === "tilelayer").flatMap(layer => (layer.data || []).flatMap((gid, index) => {
+    const asset = tileAssets[gid];
+    return asset ? [{ id: `${layer.id}:${index}`, asset, local: { x: index % width, y: Math.floor(index / width), z: 0 }, source: { layerId: layer.id, gid } }] : [];
+  }));
+  const objects = imported.layers.filter(layer => layer.type === "objectgroup").flatMap(layer => (layer.objects || []).flatMap(object => {
+    const properties = Object.fromEntries((object.properties || []).map(property => [property.name, property.value]));
+    const asset = properties.asset || objectAssets[object.type];
+    if (!asset) return [];
+    return [{ id: `tiled:${layer.id}:${object.id}`, name: object.name || "", kind: "scenery", asset, local: { x: finite(object.x), y: finite(object.y), z: finite(properties.elevation) }, source: { layerId: layer.id, objectId: object.id } }];
+  }));
+  return { id: "world-scene", footprint: imported.footprint, tiles, objects, source: imported.source };
+}
