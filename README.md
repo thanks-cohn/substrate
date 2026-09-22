@@ -9,6 +9,10 @@
 ╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝
 ```
 
+<p align="center">
+  <img src="./f08cdbc3-1155-4bbe-8728-82b27b1452e4.png" alt="NEON Cubecosm moon scene" width="900">
+</p>
+
 **Your browser has tabs. SUBSTRATE gives it a desk.**
 
 (Originally Called Framechute)
