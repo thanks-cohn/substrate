@@ -16,6 +16,10 @@ The versioned semantic asset record links stable node/region identity, source ha
 
 ## Why agents gain traction
 
+### Toonworld's artist-facing hybrid rig
+
+Allow a drawn character to remain a flat, Paper Mario-like animated image in the world, with an editable rig beneath the visible art. The artist drags a hand, jaw, eye or torso on the image; named joints, pivots, hit regions and depth anchors translate that gesture into repeatable motion. Selected rig-bound art regions may protrude into 3D for a punch, bulging eye, reaching arm or other toon effect while the rest remains flat. Store region bindings, facing, layer order, depth limits, collision and return poses as inspectable semantics; let the artist correct any automatic rig suggestion. The same asset API should accept both labeled Blender meshes and this rigged 2D/3D representation. This is future work, not a shipped renderer or rig editor.
+
 An agent should be able to inspect: what map cell and landmass owns a location; which terrain elevations are protected; where a placement surface lies in world coordinates; what side of an asset is its entrance; whether a footprint fits; where a road leads; whether crossing a world seam is short; what was inferred and what was explicitly authored. Versioned programmer APIs expose exact edits while agent APIs expose intent, plans and previews. Both share stable IDs, grants, validation, revision checks, commit and undo. Keep snapshots, references, preview diffs and errors available to any authorized agent through documented open formats and API operations.
 
 This makes the agent productive with existing and future assets: place a watchtower on stable high ground with its door toward a path; attach a light to a named socket; generate missing coastline without altering a protected town; assemble a large world from small authored maps. The agent can eventually write game rules against this structure rather than infer all geometry and meaning from pixels. The goal is to make a whole game easier to build with an agent than attempting to generate all its world semantics unaided; it is an architectural goal, not a claim of a working full-game generator.
