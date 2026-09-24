@@ -1,0 +1,27 @@
+# ÆXIS bridge in SUBSTRATE: from authored maps and assets to agent-editable worlds
+
+**Status:** Proposal only. **Stage fit:** ÆXIS establishes world truth, AERIS previews/traverses, EARTH (formerly TOPOS) develops geography and object-ready surfaces, and SEKAI accepts and places GLBs. Godot handoff follows those stages. See [the stages](../Stages/README.md), [Stage 3/4 placement](topos-stage-3-map-shapes-stage-4-asset-surfaces.md) and [agent design](agentic_design.md). A matching technical proposal is in Tiled-223D; Framechute keeps a companion vision.
+
+## The creator's journey
+
+Import one or many Tiled maps, numeric elevations, a book or description, and optional overview or side images. ÆXIS proposes how the pieces fit on a master geography; the creator accepts defaults, changes landmass placement and scale, or redraws a coast. Empty open ocean stays implicit and can be enlarged by increasing world extent and landmass separation; the detailed maps need not expand. AERIS displays a cheap flyable world while authoritative geography stays independent of its visual curvature and sky. EARTH attaches stable queryable placement surfaces to the geography. SEKAI lets the creator bring a Blender-made GLB, click a location, preview and place it; the same object remains identifiable in the Tiled marker, world data and 3D view.
+
+The current Tiled-223D prototype has a browser viewer, Tiled JSON import, procedural flight world, sparse demo scale profiles, a limited low-ground insertion script and a versioned world API slice for two or three planned terrain regions. Its distinct Tiled exporter and browser importer are not yet a complete semantic round trip. SUBSTRATE's larger stage journey, arbitrary multi-map combination, model-based reference interpretation, asset surface labeling and Godot export are proposed, not shipped. Keep the first path usable without a model or a Godot install.
+
+## Blender-facing surface studio
+
+Blender remains the artist's modeling home. SUBSTRATE/ÆXIS offers a focused imported-GLB inspection surface: select an object, node, point or simple quadrilateral patch and give it a role such as `base`, `entrance`, `roof`, `collision face`, `attachment socket` or `walkable top`. A simple default footprint works before advanced labeling. Later segmentation can select exact mesh polygons or volumes. An optional model may suggest distinctions between surfaces from the mesh and supplied images; keep uncertainty visible and let the creator correct them with direct manipulation.
+
+The versioned semantic asset record links stable node/region identity, source hash and provenance to frame, units, oriented footprint, transform, normal, placement constraints, collision and labels. On a revised Blender export, inspect topology changes and ask for rebinding only where automatic matching is unsafe. A model's description alone is insufficient to locate the actual bottom or doorway, and generated previews must not become the authoritative collision model.
+
+## Why agents gain traction
+
+An agent should be able to inspect: what map cell and landmass owns a location; which terrain elevations are protected; where a placement surface lies in world coordinates; what side of an asset is its entrance; whether a footprint fits; where a road leads; whether crossing a world seam is short; what was inferred and what was explicitly authored. Versioned programmer APIs expose exact edits while agent APIs expose intent, plans and previews. Both share stable IDs, grants, validation, revision checks, commit and undo. Keep snapshots, references, preview diffs and errors available to any authorized agent through documented open formats and API operations.
+
+This makes the agent productive with existing and future assets: place a watchtower on stable high ground with its door toward a path; attach a light to a named socket; generate missing coastline without altering a protected town; assemble a large world from small authored maps. The agent can eventually write game rules against this structure rather than infer all geometry and meaning from pixels. The goal is to make a whole game easier to build with an agent than attempting to generate all its world semantics unaided; it is an architectural goal, not a claim of a working full-game generator.
+
+## First engine handoff: Godot
+
+After Tiled-to-ÆXIS and Blender-to-ÆXIS paths pass save/reload and edit tests, build a small Godot adapter. Export terrain/height data, placed GLB instances, collision proxies, transforms, stable IDs and semantic anchors with a manifest of units and supported behaviors. Show a starter scene with one coastline and one base/entrance-labeled asset at the same world position. Godot implements gameplay, scripts and runtime systems; ÆXIS preserves editable creative world truth and preview. Declare unsupported metadata and use a sidecar where generic glTF or Tiled exports cannot carry it faithfully. Avoid suggesting that importing a GLB automatically creates a playable game.
+
+**Acceptance demonstration:** Import a small Tiled map and height companion, add an authored subset without erasing old terrain, place and label one Blender asset, let an agent propose and preview a placement, commit and undo, save and reload, and open the exported Godot scene with matching transform and semantics. Record time, memory and frame costs on a 4 GB Windows target; do not depend on per-frame AI calls.
