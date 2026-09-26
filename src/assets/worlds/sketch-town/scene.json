@@ -1,0 +1,16 @@
+{
+  "type": "map",
+  "version": "1.10",
+  "tiledversion": "1.10",
+  "orientation": "isometric",
+  "renderorder": "right-down",
+  "width": 15,
+  "height": 11,
+  "tilewidth": 232,
+  "tileheight": 110,
+  "tilesets": [{ "firstgid": 1, "source": "source/Map/map_tiles.tsx" }],
+  "layers": [
+    { "id": 1, "name": "Ground", "type": "tilelayer", "width": 15, "height": 11, "data": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] },
+    { "id": 2, "name": "Semantic objects", "type": "objectgroup", "objects": [{ "id": 1, "name": "Town Hall", "type": "building", "x": 7, "y": 4 }, { "id": 2, "name": "West Tree", "type": "scenery", "x": 3, "y": 3 }] }
+  ]
+}

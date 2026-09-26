@@ -423,6 +423,18 @@ body.toolbar-hidden .toolbar-summon {
   background-size: 24px 24px;
 }
 
+.omni-world-plane { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.workspace.omni-world-enabled { background-color: #d9e5d2; background-image: none; }
+.world-lighting-settings { margin: 12px 0; padding: 12px; border: 1px solid color-mix(in srgb, #38a36c 42%, Canvas); border-radius: 12px; background: color-mix(in srgb, #38a36c 8%, Canvas); }
+.world-lighting-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.world-lighting-heading > span { color: #238354; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.world-toggle-pair,.world-block-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+.world-toggle-pair label,.world-block-controls label { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
+.world-block-controls button { min-width: 34px; padding: 0 8px; }
+.world-range { display: grid; gap: 3px; margin: 8px 0; font-size: 12px; }
+.world-range > span { display: flex; justify-content: space-between; }
+.world-range input { width: 100%; accent-color: #238354; }
+
 body.toolbar-hidden .workspace {
   min-height: 100vh;
   overflow: visible;
