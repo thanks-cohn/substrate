@@ -4,6 +4,9 @@ set -eu
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 DIST_DIR="$ROOT_DIR/dist"
 
+# Runtime world art is an exact, reproducible subset of the tracked source ZIP.
+python3 "$ROOT_DIR/scripts/prepare-sketch-town-assets.py"
+
 python3 - "$ROOT_DIR" "$DIST_DIR" <<'PY'
 import json
 import pathlib
@@ -88,7 +91,7 @@ for item in include_roots:
     if path.is_file():
         files.append(path)
     elif path.is_dir():
-        files.extend(candidate for candidate in path.rglob("*") if candidate.is_file())
+        files.extend(candidate for candidate in path.rglob("*") if candidate.is_file() and not (item == pathlib.Path("assets") and candidate.suffix.lower() == ".zip" and "worlds" in candidate.parts))
     else:
         raise SystemExit(f"Required package path is missing: {item}")
 
@@ -149,6 +152,11 @@ required_package_files = {
     "src/launcher.js",
     "src/workspace.html",
     "src/workspace-extras.js",
+    "src/assets/worlds/sketch-town/grass.png",
+    "src/assets/worlds/sketch-town/path.png",
+    "src/assets/worlds/sketch-town/building.png",
+    "src/assets/worlds/sketch-town/tree.png",
+    "src/assets/worlds/sketch-town/trees.png",
     "src/picker-guard.js",
     "src/media-dock-grab-pin.js",
     "src/grab-art-runtime.js",
@@ -166,6 +174,8 @@ with zipfile.ZipFile(output, "r") as archive:
     missing = sorted(required_package_files - names)
     if missing:
         raise SystemExit(f"Packaging error: required files missing from ZIP: {missing}")
+    if "assets/worlds/sketch-town/kenney_sketchTown.zip" in names:
+        raise SystemExit("Packaging error: complete Sketch Town source archive must not be bundled")
     packaged_manifest = json.loads(archive.read("manifest.json").decode("utf-8"))
     if packaged_manifest != manifest:
         raise SystemExit("Packaging error: manifest inside ZIP differs from source manifest")

@@ -105,6 +105,18 @@
           <option value="always">Always Show</option>
         </select>
       </label>
+
+      <section class="world-lighting-settings" aria-labelledby="world-lighting-title">
+        <div class="world-lighting-heading"><strong id="world-lighting-title">World Lighting</strong><span>Omni World</span></div>
+        <label class="setting-row"><input id="world-enabled" type="checkbox"><span><strong>Enable Sketch Town</strong><small>Show the portable 2.5D World Block beneath application frames.</small></span></label>
+        <div class="world-toggle-pair"><label><input id="world-sun" type="checkbox"> Sun</label><label><input id="world-shadows" type="checkbox"> Frame shadows</label></div>
+        <label class="world-range"><span>Direction <output id="world-azimuth-value">315°</output></span><input id="world-azimuth" type="range" min="0" max="359" step="1"></label>
+        <label class="world-range"><span>Elevation <output id="world-elevation-value">42°</output></span><input id="world-elevation" type="range" min="5" max="85" step="1"></label>
+        <label class="world-range"><span>Ambient illumination</span><input id="world-ambient" type="range" min="0" max="1" step="0.01"></label>
+        <label class="world-range"><span>Sunlight intensity</span><input id="world-intensity" type="range" min="0" max="1" step="0.01"></label>
+        <div class="world-block-controls" aria-label="Sketch Town World Block position"><button type="button" data-world-move="0,-64" title="Move world north">↑</button><button type="button" data-world-move="-64,0" title="Move world west">←</button><button type="button" data-world-move="64,0" title="Move world east">→</button><button type="button" data-world-move="0,64" title="Move world south">↓</button><label><input id="world-anchor" type="checkbox"> Anchor</label></div>
+        <button id="world-reset" type="button">Restore lighting defaults</button>
+      </section>
       <label class="setting-choice-row">
         <span><strong>Resize corner ⅃</strong><small>Always show it, fade it after a delay, or hide it while keeping its corner hotspot active.</small></span>
         <select id="setting-frameless-resize-handle-mode" aria-label="Resize corner visibility">
@@ -234,6 +246,7 @@
   </template>
 
   <script type="module" src="workspace.js"></script>
+  <script type="module" src="worlds/omni-world.js"></script>
   <script type="module" src="toolbar-paradigm.js"></script>
   <script type="module" src="controls.js"></script>
   <script type="module" src="workspace-extras.js"></script>
